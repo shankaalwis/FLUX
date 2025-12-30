@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  FileText, 
-  CreditCard, 
-  Building2, 
+import {
+  LayoutDashboard,
+  FileText,
+  CreditCard,
+  Building2,
   Lightbulb,
   Upload,
   Settings,
@@ -19,6 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAuth } from '@/hooks/useAuth';
 import { BankProfile } from '@/types/database';
+import { ModeToggle } from '@/components/mode-toggle';
 
 interface AppSidebarProps {
   bankProfiles: BankProfile[];
@@ -27,11 +28,11 @@ interface AppSidebarProps {
   onAddProfile: () => void;
 }
 
-export function AppSidebar({ 
-  bankProfiles, 
-  selectedProfileId, 
+export function AppSidebar({
+  bankProfiles,
+  selectedProfileId,
   onSelectProfile,
-  onAddProfile 
+  onAddProfile
 }: AppSidebarProps) {
   const location = useLocation();
   const { signOut, user } = useAuth();
@@ -39,6 +40,7 @@ export function AppSidebar({
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Accounts', href: '/accounts', icon: Building2 },
     { name: 'Transactions', href: '/transactions', icon: CreditCard },
     { name: 'Statements', href: '/statements', icon: FileText },
     { name: 'Insights', href: '/insights', icon: Lightbulb },
@@ -52,7 +54,7 @@ export function AppSidebar({
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
           <BarChart3 className="w-5 h-5 text-primary-foreground" />
         </div>
-        <span className="text-lg font-bold">FinSight AI</span>
+        <span className="text-lg font-bold">MoneMap</span>
       </div>
 
       <ScrollArea className="flex-1 px-3 py-4">
@@ -137,6 +139,7 @@ export function AppSidebar({
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{user?.email}</p>
           </div>
+          <ModeToggle />
         </div>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" className="flex-1" asChild>

@@ -31,7 +31,7 @@ export default function Auth() {
       }
 
       setLoading(true);
-      const { error } = isSignUp 
+      const { error } = isSignUp
         ? await signUp(email, password)
         : await signIn(email, password);
 
@@ -60,11 +60,11 @@ export default function Auth() {
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary p-12 flex-col justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
               <BarChart3 className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-primary-foreground">FinSight AI</span>
+            <span className="text-2xl font-bold text-primary-foreground">MoneMap</span>
           </div>
           <h1 className="text-4xl font-bold text-primary-foreground mb-4">
             Intelligent Bank Statement Analysis
@@ -73,7 +73,7 @@ export default function Auth() {
             Upload your bank statements and let AI categorize transactions, detect patterns, and generate actionable insights.
           </p>
         </div>
-        
+
         <div className="space-y-6">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
@@ -100,11 +100,11 @@ export default function Auth() {
       <div className="flex-1 flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
+            <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">FinSight AI</span>
+              <span className="text-xl font-bold">MoneMap</span>
             </div>
             <CardTitle>Welcome</CardTitle>
             <CardDescription>Sign in to your account or create a new one</CardDescription>
@@ -115,7 +115,7 @@ export default function Auth() {
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="signin" className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
@@ -139,15 +139,15 @@ export default function Auth() {
                     disabled={loading}
                   />
                 </div>
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   onClick={() => handleAuth(false)}
                   disabled={loading}
                 >
                   {loading ? 'Signing in...' : 'Sign In'}
                 </Button>
               </TabsContent>
-              
+
               <TabsContent value="signup" className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
@@ -171,8 +171,8 @@ export default function Auth() {
                     disabled={loading}
                   />
                 </div>
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   onClick={() => handleAuth(true)}
                   disabled={loading}
                 >
