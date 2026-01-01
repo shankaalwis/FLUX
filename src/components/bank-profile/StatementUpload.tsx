@@ -9,6 +9,17 @@ import { toast } from 'sonner';
 import { Loader2, Upload as UploadIcon } from 'lucide-react';
 import { extractTextFromPDF } from '@/utils/pdf-extractor';
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
 interface Statement {
     id: string;
     filename: string;
@@ -33,6 +44,11 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
+    // Password handling state
+    const [passwordPromptOpen, setPasswordPromptOpen] = useState(false);
+    const [passwordInput, setPasswordInput] = useState('');
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+
     useEffect(() => {
         fetchStatements();
     }, [profileId]);
@@ -54,6 +70,68 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
         setLoading(false);
     };
 
+    const processFile = async (file: File, password?: string): Promise<boolean> => {
+        try {
+            toast.info(`Extracting text from ${file.name}...`);
+            const textContent = await extractTextFromPDF(file, password);
+
+            if (!textContent || textContent.length < 50) {
+                throw new Error('No text content extracted from PDF. Is it a scanned image?');
+            }
+
+            toast.info(`Extracted ${textContent.length} characters. Analyzing...`);
+            toast.info(`Processing ${file.name} with AI...`);
+
+            // Create a "log" record without the actual file
+            const { data: insertData, error: insertError } = await supabase
+                .from('statements')
+                .insert({
+                    bank_profile_id: profileId,
+                    user_id: user!.id,
+                    filename: file.name,
+                    file_path: 'PRIVACY_MODE_NO_STORAGE',
+                    file_size: file.size,
+                    status: 'processing',
+                })
+                .select();
+
+            if (insertError) throw insertError;
+            const statementId = insertData[0].id;
+
+            // Send text directly to Edge Function
+            const { error: invokeError, data: invokeData } = await supabase.functions.invoke('process-statement', {
+                body: {
+                    statementId,
+                    textContent,
+                    saveToDb: true
+                }
+            });
+
+            if (invokeError) {
+                throw invokeError;
+            }
+
+            if (!invokeData.success) {
+                throw new Error(invokeData.error || 'Unknown error from processing function');
+            }
+
+            toast.success(`${file.name} processed successfully`);
+            return true;
+
+        } catch (error: any) {
+            if (error.message === 'PASSWORD_REQUIRED') {
+                setPendingFile(file);
+                setPasswordPromptOpen(true);
+                setPasswordInput('');
+                return false;
+            }
+
+            console.error('Processing error:', error);
+            toast.error(`Failed to process ${file.name}: ${error.message}`);
+            return false;
+        }
+    };
+
     const handleUpload = async () => {
         if (selectedFiles.length === 0) {
             toast.error('Please select files to upload');
@@ -63,55 +141,43 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
         setUploading(true);
 
         for (const file of selectedFiles) {
-            try {
-                toast.info(`Extracting text from ${file.name}...`);
-                const textContent = await extractTextFromPDF(file);
-
-                toast.info(`Processing ${file.name} with AI...`);
-
-                // Create a "log" record without the actual file
-                const { data: insertData, error: insertError } = await supabase
-                    .from('statements')
-                    .insert({
-                        bank_profile_id: profileId,
-                        user_id: user!.id,
-                        filename: file.name,
-                        file_path: 'PRIVACY_MODE_NO_STORAGE', // Explicitly marking as not stored
-                        file_size: file.size,
-                        status: 'processing',
-                    })
-                    .select();
-
-                if (insertError) throw insertError;
-                const statementId = insertData[0].id;
-
-                // Send text directly to Edge Function
-                const { error: invokeError, data: invokeData } = await supabase.functions.invoke('process-statement', {
-                    body: {
-                        statementId, // Still useful for updating specific status
-                        textContent, // The raw text
-                        saveToDb: true
-                    }
-                });
-
-                if (invokeError) {
-                    throw invokeError;
-                }
-
-                toast.success(`${file.name} processed successfully`);
-
-            } catch (error: any) {
-                console.error('Processing error:', error);
-                toast.error(`Failed to process ${file.name}: ${error.message}`);
-
-                // If we created a statement record, mark it failed? 
-                // We're iterating locally so we might not have the ID if insert failed.
+            const success = await processFile(file);
+            if (!success && pendingFile) {
+                // Stopped for password, break loop to handle dialog
+                // Note: logic implies only 1 password file handled at a time for simplicity
+                setUploading(false);
+                return;
             }
         }
 
         setUploading(false);
         setSelectedFiles([]);
         fetchStatements();
+    };
+
+    const handlePasswordSubmit = async () => {
+        if (!pendingFile) return;
+
+        setPasswordPromptOpen(false);
+        setUploading(true);
+
+        const success = await processFile(pendingFile, passwordInput);
+
+        setUploading(false);
+
+        if (success) {
+            setPendingFile(null);
+            // Remove the processed file from selection
+            const remaining = selectedFiles.filter(f => f !== pendingFile);
+            setSelectedFiles(remaining);
+            if (remaining.length === 0) {
+                fetchStatements();
+            } else {
+                // Optionally continue? For now user clicks upload again for remaining
+                toast.info('Password accepted. You can continue uploading other files if any.');
+                fetchStatements();
+            }
+        }
     };
 
     const handleDelete = async (statementId: string, filePath: string) => {
@@ -121,9 +187,9 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                 .from('statements')
                 .remove([filePath]);
 
-            if (storageError) {
-                throw storageError;
-            }
+            // Note: failing storage delete is expected for privacy mode files (path doesn't exist)
+            // So we generally ignore logging that error or treat as warning
+            // if (storageError) throw storageError;
 
             // Delete from database
             const { error: dbError } = await supabase
@@ -247,6 +313,42 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                     </div>
                 )}
             </div>
+
+            {/* Password Prompt Dialog */}
+            <Dialog open={passwordPromptOpen} onOpenChange={setPasswordPromptOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Password Required</DialogTitle>
+                        <DialogDescription>
+                            The file "{pendingFile?.name}" is password protected. Please enter the password to continue.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label htmlFor="pdf-password">PDF Password</Label>
+                        <Input
+                            id="pdf-password"
+                            type="password"
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            placeholder="Enter password"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handlePasswordSubmit();
+                            }}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => {
+                            setPasswordPromptOpen(false);
+                            setPendingFile(null);
+                        }}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handlePasswordSubmit}>
+                            Submit
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

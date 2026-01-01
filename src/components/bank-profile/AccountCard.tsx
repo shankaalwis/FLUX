@@ -63,7 +63,7 @@ export function AccountCard({ profile, onView, onDelete }: AccountCardProps) {
                             {profile.bank_name}
                         </CardDescription>
                     </div>
-                    <Badge className={getAccountTypeColor(profile.account_type)} variant="secondary">
+                    <Badge className={`${getAccountTypeColor(profile.account_type)} capitalize`} variant="secondary">
                         {profile.account_type}
                     </Badge>
                 </div>

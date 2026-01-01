@@ -77,7 +77,7 @@ export default function BankProfile() {
                 </Link>
                 <div>
                     <h1 className="text-2xl font-bold">{profile.name}</h1>
-                    <p className="text-muted-foreground">{profile.bank_name} • {profile.account_type}</p>
+                    <p className="text-muted-foreground capitalize">{profile.bank_name} • {profile.account_type}</p>
                 </div>
             </div>
 

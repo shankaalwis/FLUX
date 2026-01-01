@@ -59,7 +59,7 @@ serve(async (req) => {
         ${textContent.substring(0, 30000)} // Limit context window safely
         `;
 
-      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,12 +126,25 @@ serve(async (req) => {
     });
   } catch (error: unknown) {
     console.error('Error processing statement:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    let message = error instanceof Error ? error.message : 'Unknown error';
 
-    // Try to mark as failed if we have an ID (passed via closure/scope if we structure differently, but here complex)
-    // For now just return error
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
+    // If model not found, try to list available models to help debug
+    if (message.includes('not found') || message.includes('not supported')) {
+      try {
+        const geminiKey = Deno.env.get('GEMINI_API_KEY');
+        const listResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiKey}`);
+        const listData = await listResp.json();
+        if (listData.models) {
+          const availableModels = listData.models.map((m: any) => m.name).join(', ');
+          message += ` | AVAILABLE MODELS: ${availableModels}`;
+        }
+      } catch (listError) {
+        message += ` | Failed to list models: ${listError}`;
+      }
+    }
+
+    return new Response(JSON.stringify({ success: false, error: message }), {
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

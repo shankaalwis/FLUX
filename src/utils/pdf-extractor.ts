@@ -1,31 +1,37 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Set worker source
-// In a real production app, you might want to bundle the worker or serve it from your public dir
-// For now, we use a CDN to avoid complex Vite configuration for the worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+import workerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
 
-export const extractTextFromPDF = async (file: File): Promise<string> => {
+// Set worker source using Vite's asset handling
+pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+export const extractTextFromPDF = async (file: File, password?: string): Promise<string> => {
     try {
         const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        
+        const pdf = await pdfjsLib.getDocument({
+            data: arrayBuffer,
+            password: password
+        }).promise;
+
         let fullText = '';
-        
+
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             const pageText = textContent.items
                 .map((item: any) => item.str)
                 .join(' ');
-            
+
             fullText += `--- PAGE ${i} ---\n${pageText}\n`;
         }
-        
+
         return fullText;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error extracting text from PDF:', error);
+        if (error.name === 'PasswordException' || error.message?.includes('Password')) {
+            throw new Error('PASSWORD_REQUIRED');
+        }
         throw new Error('Failed to extract text from PDF');
     }
 };
