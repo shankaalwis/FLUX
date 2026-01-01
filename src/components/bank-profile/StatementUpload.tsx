@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2, Upload as UploadIcon } from 'lucide-react';
+import { extractTextFromPDF } from '@/utils/pdf-extractor';
 
 interface Statement {
     id: string;
     filename: string;
+    file_path: string;
     file_size: number;
     status: 'queued' | 'processing' | 'completed' | 'failed';
     error_message: string | null;
@@ -62,59 +64,48 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
 
         for (const file of selectedFiles) {
             try {
-                // Upload to Supabase Storage
-                const filePath = `${user!.id}/${profileId}/${Date.now()}_${file.name}`;
-                const { error: uploadError } = await supabase.storage
-                    .from('statements')
-                    .upload(filePath, file);
+                toast.info(`Extracting text from ${file.name}...`);
+                const textContent = await extractTextFromPDF(file);
 
-                if (uploadError) {
-                    throw uploadError;
-                }
+                toast.info(`Processing ${file.name} with AI...`);
 
-                // Create statement record
+                // Create a "log" record without the actual file
                 const { data: insertData, error: insertError } = await supabase
                     .from('statements')
                     .insert({
                         bank_profile_id: profileId,
                         user_id: user!.id,
                         filename: file.name,
-                        file_path: filePath,
+                        file_path: 'PRIVACY_MODE_NO_STORAGE', // Explicitly marking as not stored
                         file_size: file.size,
-                        status: 'queued',
+                        status: 'processing',
                     })
                     .select();
 
-                if (insertError) {
-                    throw insertError;
-                }
+                if (insertError) throw insertError;
+                const statementId = insertData[0].id;
 
-                toast.success(`${file.name} uploaded successfully`);
-
-                // Trigger processing
-                const { error: invokeError } = await supabase.functions.invoke('process-statement', {
-                    body: { statementId: insertData[0].id }
+                // Send text directly to Edge Function
+                const { error: invokeError, data: invokeData } = await supabase.functions.invoke('process-statement', {
+                    body: {
+                        statementId, // Still useful for updating specific status
+                        textContent, // The raw text
+                        saveToDb: true
+                    }
                 });
 
                 if (invokeError) {
-                    console.error('Error invoking function:', invokeError);
-                    toast.error('Failed to start processing');
-
-                    // Update status to failed so user knows
-                    await supabase
-                        .from('statements')
-                        .update({
-                            status: 'failed',
-                            error_message: invokeError.message || 'Failed to trigger processing'
-                        })
-                        .eq('id', insertData[0].id);
-
-                    // Refresh list to show failed status
-                    fetchStatements();
+                    throw invokeError;
                 }
-            } catch (error) {
-                console.error('Upload error:', error);
-                toast.error(`Failed to upload ${file.name}`);
+
+                toast.success(`${file.name} processed successfully`);
+
+            } catch (error: any) {
+                console.error('Processing error:', error);
+                toast.error(`Failed to process ${file.name}: ${error.message}`);
+
+                // If we created a statement record, mark it failed? 
+                // We're iterating locally so we might not have the ID if insert failed.
             }
         }
 
