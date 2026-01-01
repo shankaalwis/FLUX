@@ -21,9 +21,9 @@ export function SpendingChart({ data }: SpendingChartProps) {
             <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis dataKey="month" className="text-xs" />
-              <YAxis className="text-xs" tickFormatter={(value) => `$${value.toLocaleString()}`} />
+              <YAxis className="text-xs" tickFormatter={(value) => `Rs. ${value.toLocaleString()}`} />
               <Tooltip
-                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                formatter={(value: number) => [`Rs. ${value.toLocaleString()}`, '']}
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',

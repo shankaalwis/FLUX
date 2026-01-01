@@ -28,11 +28,11 @@ export function TopMerchants({ data }: TopMerchantsProps) {
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium truncate flex-1">{item.merchant}</span>
                 <span className="text-muted-foreground ml-2">
-                  ${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  Rs. {item.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </span>
               </div>
-              <Progress 
-                value={(item.amount / maxAmount) * 100} 
+              <Progress
+                value={(item.amount / maxAmount) * 100}
                 className="h-2"
               />
               <p className="text-xs text-muted-foreground">

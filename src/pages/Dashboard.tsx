@@ -31,7 +31,7 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     setLoading(true);
-    
+
     let transQuery = supabase
       .from('transactions')
       .select('*')
@@ -48,7 +48,7 @@ export default function Dashboard() {
 
     if (transResult.data) setTransactions(transResult.data as Transaction[]);
     if (insightsResult.data) setInsights(insightsResult.data as AIInsight[]);
-    
+
     setLoading(false);
   };
 
@@ -107,13 +107,13 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Income"
-          value={`$${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+          value={`Rs. ${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
           icon={<DollarSign className="h-5 w-5" />}
           trend={{ value: 8.2, positive: true }}
         />
         <StatCard
           title="Total Expenses"
-          value={`$${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+          value={`Rs. ${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
           icon={<TrendingDown className="h-5 w-5" />}
           trend={{ value: 3.1, positive: false }}
         />

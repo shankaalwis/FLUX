@@ -64,7 +64,7 @@ export default function Auth() {
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
               <BarChart3 className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-primary-foreground">MoneMap</span>
+            <span className="text-2xl font-bold text-primary-foreground">Flux</span>
           </div>
           <h1 className="text-4xl font-bold text-primary-foreground mb-4">
             Intelligent Bank Statement Analysis
@@ -104,7 +104,7 @@ export default function Auth() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <BarChart3 className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold">MoneMap</span>
+              <span className="text-xl font-bold">Flux</span>
             </div>
             <CardTitle>Welcome</CardTitle>
             <CardDescription>Sign in to your account or create a new one</CardDescription>
