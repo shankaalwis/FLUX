@@ -54,6 +54,7 @@ serve(async (req) => {
         - amount (number, negative for debit/expense, positive for credit/income)
         - category (guess based on description, e.g., 'Food & Dining', 'Shopping', 'Bills & Utilities', 'Transfer', 'Income')
         - merchant (extracted merchant name or simplified description)
+        - is_recurring (boolean, true if likely a subscription or monthly bill like Netflix, Spotify, Rent, Utilities)
 
         Text:
         ${textContent.substring(0, 30000)} // Limit context window safely

@@ -21,6 +21,9 @@ import {
 import { Transaction, BankProfile } from '@/types/database';
 import { Loader2 } from 'lucide-react';
 import { AddTransactionDialog } from './AddTransactionDialog';
+import { EditTransactionDialog } from './EditTransactionDialog';
+import { Pencil } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -43,6 +46,7 @@ export function TransactionTable({
   const [maxAmount, setMaxAmount] = React.useState('');
   const [sortConfig, setSortConfig] = React.useState<{ key: 'date' | 'amount'; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
   const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
+  const [editingTransaction, setEditingTransaction] = React.useState<Transaction | null>(null);
 
   // Derive unique categories
   const categories = React.useMemo(() => {
@@ -98,6 +102,8 @@ export function TransactionTable({
       </div>
     );
   }
+
+
 
   return (
     <div className="space-y-4">
@@ -156,12 +162,13 @@ export function TransactionTable({
               <TableHead className="text-right cursor-pointer hover:text-primary" onClick={() => toggleSort('amount')}>
                 Amount {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
               </TableHead>
+              <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={showAccount ? 5 : 4} className="h-24 text-center">
+                <TableCell colSpan={showAccount ? 6 : 5} className="h-24 text-center">
                   No transactions found.
                 </TableCell>
               </TableRow>
@@ -208,12 +215,24 @@ export function TransactionTable({
                       currency: 'LKR',
                     }).format(Math.abs(transaction.amount))}
                   </TableCell>
+                  <TableCell>
+                    <Button variant="ghost" size="icon" onClick={() => setEditingTransaction(transaction)}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
       </div>
+
+      <EditTransactionDialog
+        transaction={editingTransaction}
+        open={!!editingTransaction}
+        onOpenChange={(open) => !open && setEditingTransaction(null)}
+        onSuccess={() => window.location.reload()}
+      />
     </div>
   );
 }

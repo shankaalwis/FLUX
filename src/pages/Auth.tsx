@@ -1,67 +1,66 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { z } from 'zod';
-import { Activity, TrendingUp, Shield } from 'lucide-react';
-
-const authSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-});
+import { Activity, TrendingUp, Shield, Loader2 } from 'lucide-react';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export default function Auth() {
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signUp, signIn } = useAuth();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const handleAuth = async (isSignUp: boolean) => {
+  if (user) {
+    navigate('/');
+    return null;
+  }
+
+  const handleAuth = async (event: React.FormEvent, type: 'login' | 'signup') => {
+    event.preventDefault();
+    setLoading(true);
+
     try {
-      const validation = authSchema.safeParse({ email, password });
-      if (!validation.success) {
-        toast.error(validation.error.errors[0].message);
-        return;
+      if (type === 'signup') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        toast.success('Check your email for the confirmation link!');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        navigate('/');
       }
-
-      setLoading(true);
-      const { error } = isSignUp
-        ? await signUp(email, password)
-        : await signIn(email, password);
-
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          toast.error('This email is already registered. Please sign in instead.');
-        } else if (error.message.includes('Invalid login credentials')) {
-          toast.error('Invalid email or password. Please try again.');
-        } else {
-          toast.error(error.message);
-        }
-        return;
-      }
-
-      toast.success(isSignUp ? 'Account created successfully!' : 'Welcome back!');
-      navigate('/');
-    } catch (err) {
-      toast.error('An unexpected error occurred');
+    } catch (error: any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex relative">
+      <div className="absolute top-4 right-4 z-50">
+        <ModeToggle />
+      </div>
+
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary p-12 flex-col justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
               <Activity className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-2xl font-bold text-primary-foreground">Flux</span>
@@ -100,7 +99,7 @@ export default function Auth() {
       <div className="flex-1 flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2 mb-2 lg:hidden">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Activity className="w-5 h-5 text-primary-foreground" />
               </div>
@@ -141,7 +140,7 @@ export default function Auth() {
                 </div>
                 <Button
                   className="w-full"
-                  onClick={() => handleAuth(false)}
+                  onClick={(e) => handleAuth(e, 'login')}
                   disabled={loading}
                 >
                   {loading ? 'Signing in...' : 'Sign In'}
@@ -173,7 +172,7 @@ export default function Auth() {
                 </div>
                 <Button
                   className="w-full"
-                  onClick={() => handleAuth(true)}
+                  onClick={(e) => handleAuth(e, 'signup')}
                   disabled={loading}
                 >
                   {loading ? 'Creating account...' : 'Create Account'}

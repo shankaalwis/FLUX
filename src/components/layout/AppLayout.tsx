@@ -58,9 +58,7 @@ export function AppLayout() {
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1 overflow-auto">
-          <div className="p-4 md:hidden">
-            <SidebarTrigger />
-          </div>
+          {/* SidebarTrigger moved to inside AppSidebar */}
           <Outlet context={{ bankProfiles, selectedProfileId, refreshProfiles: fetchBankProfiles }} />
         </main>
       </div>

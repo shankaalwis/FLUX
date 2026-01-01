@@ -56,7 +56,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
               <Legend
                 layout="vertical"
                 verticalAlign="middle"
-                align="left"
+                align="right"
                 iconType="circle"
                 formatter={(value, entry) => {
                   const item = data.find(d => d.name === value);
