@@ -10,14 +10,14 @@ interface CategoryPieChartProps {
 }
 
 const COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
-  'hsl(158, 64%, 51%)',
-  'hsl(141, 69%, 58%)',
-  'hsl(172, 66%, 50%)',
+  '#22c55e', // Green
+  '#ef4444', // Red
+  '#3b82f6', // Blue
+  '#eab308', // Yellow
+  '#f97316', // Orange
+  '#a855f7', // Purple
+  '#ec4899', // Pink
+  '#14b8a6', // Teal
 ];
 
 export function CategoryPieChart({ data }: CategoryPieChartProps) {
@@ -46,14 +46,18 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => [`$${value.toLocaleString()}`, '']}
+                formatter={(value: number) => [`Rs. ${value.toLocaleString()}`, '']}
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '8px',
                 }}
               />
-              <Legend 
+              <Legend
+                layout="vertical"
+                verticalAlign="middle"
+                align="left"
+                iconType="circle"
                 formatter={(value, entry) => {
                   const item = data.find(d => d.name === value);
                   const percentage = item ? ((item.value / total) * 100).toFixed(1) : 0;

@@ -31,9 +31,9 @@ export function AccountComparisonChart({ data }: AccountComparisonChartProps) {
                                     borderRadius: '8px',
                                 }}
                             />
-                            <Legend />
-                            <Bar dataKey="income" fill="hsl(var(--chart-2))" name="Income" radius={[4, 4, 0, 0]} />
-                            <Bar dataKey="expenses" fill="hsl(var(--chart-5))" name="Expenses" radius={[4, 4, 0, 0]} />
+                            <Legend iconType="circle" />
+                            <Bar dataKey="income" fill="#22c55e" name="Income" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="expenses" fill="#ef4444" name="Expenses" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

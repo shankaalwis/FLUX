@@ -49,6 +49,10 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
     const [passwordInput, setPasswordInput] = useState('');
     const [pendingFile, setPendingFile] = useState<File | null>(null);
 
+    // Summary calculation state
+    const [summaryOpen, setSummaryOpen] = useState(false);
+    const [summaryData, setSummaryData] = useState({ count: 0, totalAmount: 0 });
+
     useEffect(() => {
         fetchStatements();
     }, [profileId]);
@@ -115,6 +119,11 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                 throw new Error(invokeData.error || 'Unknown error from processing function');
             }
 
+            setSummaryData({
+                count: invokeData.count,
+                totalAmount: invokeData.totalAmount || 0
+            });
+            setSummaryOpen(true);
             toast.success(`${file.name} processed successfully`);
             return true;
 
@@ -190,6 +199,18 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
             // Note: failing storage delete is expected for privacy mode files (path doesn't exist)
             // So we generally ignore logging that error or treat as warning
             // if (storageError) throw storageError;
+
+            // Delete associated transactions first (Manual Cascade)
+            const { error: txError } = await supabase
+                .from('transactions')
+                .delete()
+                .eq('statement_id', statementId);
+
+            if (txError) {
+                console.error('Error deleting transactions:', txError);
+                // We proceed to delete statement even if tx delete fails (orphan cleanup potential), 
+                // but ideally this should block. However, for UX we try to clean as much as possible.
+            }
 
             // Delete from database
             const { error: dbError } = await supabase
@@ -345,6 +366,33 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                         </Button>
                         <Button onClick={handlePasswordSubmit}>
                             Submit
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Upload Summary Dialog */}
+            <Dialog open={summaryOpen} onOpenChange={setSummaryOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Processing Complete</DialogTitle>
+                        <DialogDescription>
+                            Successfully extracted transactions from the statement.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                            <span className="text-sm font-medium">Transactions Extracted</span>
+                            <span className="text-2xl font-bold">{summaryData.count}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                            <span className="text-sm font-medium">Total Value</span>
+                            <span className="text-2xl font-bold text-primary">Rs. {summaryData.totalAmount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={() => setSummaryOpen(false)}>
+                            Done
                         </Button>
                     </DialogFooter>
                 </DialogContent>

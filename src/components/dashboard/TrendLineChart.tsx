@@ -33,10 +33,10 @@ export function TrendLineChart({ data, title = "Balance Trend" }: TrendLineChart
               <Line
                 type="monotone"
                 dataKey="balance"
-                stroke="hsl(var(--primary))"
+                stroke="#3b82f6"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 6 }}
+                activeDot={{ r: 6, fill: '#3b82f6' }}
               />
             </LineChart>
           </ResponsiveContainer>

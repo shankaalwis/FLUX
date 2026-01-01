@@ -53,7 +53,10 @@ export function AccountCard({ profile, onView, onDelete }: AccountCardProps) {
     };
 
     return (
-        <Card className="hover:shadow-lg transition-shadow">
+        <Card
+            className="hover:shadow-lg transition-shadow cursor-pointer relative group"
+            onClick={onView}
+        >
             <CardHeader>
                 <div className="flex items-start justify-between">
                     <div className="space-y-1">
@@ -86,32 +89,34 @@ export function AccountCard({ profile, onView, onDelete }: AccountCardProps) {
                 )}
             </CardContent>
             <CardFooter className="flex gap-2">
-                <Button onClick={onView} className="flex-1">
+                <Button onClick={(e) => { e.stopPropagation(); onView(); }} className="flex-1">
                     <Eye className="h-4 w-4 mr-2" />
                     View
                 </Button>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Bank Account?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This will permanently delete "{profile.name}" and all associated statements and transactions.
-                                This action cannot be undone.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                Delete
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <div onClick={(e) => e.stopPropagation()}>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="icon">
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Bank Account?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will permanently delete "{profile.name}" and all associated statements and transactions.
+                                    This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={onDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
             </CardFooter>
         </Card>
     );

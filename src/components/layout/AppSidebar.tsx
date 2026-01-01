@@ -4,16 +4,26 @@ import {
   FileText,
   CreditCard,
   Building2,
-  Lightbulb,
+  PieChart,
   Settings,
   LogOut,
   Activity
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/useAuth';
 import { ModeToggle } from '@/components/mode-toggle';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel
+} from "@/components/ui/sidebar"
+import { Button } from '@/components/ui/button';
 
 export function AppSidebar() {
   const location = useLocation();
@@ -24,69 +34,79 @@ export function AppSidebar() {
     { name: 'Accounts', href: '/accounts', icon: Building2 },
     { name: 'Transactions', href: '/transactions', icon: CreditCard },
     { name: 'Statements', href: '/statements', icon: FileText },
-    { name: 'Insights', href: '/insights', icon: Lightbulb },
+    { name: 'Insights', href: '/insights', icon: PieChart },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   return (
-    <div className="flex h-full w-64 flex-col bg-card border-r border-border">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-2 px-6 border-b border-border">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-          <Activity className="w-5 h-5 text-primary-foreground" />
-        </div>
-        <span className="text-lg font-bold">Flux</span>
-      </div>
-
-      <ScrollArea className="flex-1 px-3 py-4">
-        {/* Main Navigation */}
-        <div className="space-y-1">
-          {navigation.map((item) => {
-            const isActive = location.pathname === item.href;
-            return (
-              <Link key={item.name} to={item.href}>
-                <Button
-                  variant={isActive ? 'secondary' : 'ghost'}
-                  className={cn(
-                    'w-full justify-start gap-3',
-                    isActive && 'bg-accent text-accent-foreground'
-                  )}
-                >
-                  <item.icon className="h-4 w-4" />
-                  {item.name}
-                </Button>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Bank Profiles section removed as per user request */}
-      </ScrollArea>
-
-      {/* User section */}
-      <div className="border-t border-border p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-sm font-medium text-primary">
-              {user?.email?.charAt(0).toUpperCase()}
-            </span>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b border-border p-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <Activity className="w-5 h-5 text-primary-foreground" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.email}</p>
+          <span className="text-lg font-bold group-data-[collapsible=icon]:hidden">Flux</span>
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigation.map((item) => (
+                <SidebarMenuItem key={item.name}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.href}
+                    tooltip={item.name}
+                  >
+                    <Link to={item.href}>
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t border-border p-4">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <span className="text-sm font-medium text-primary">
+                {user?.email?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0 overflow-hidden group-data-[collapsible=icon]:hidden">
+              <p className="text-sm font-medium truncate">{user?.email}</p>
+            </div>
+            <div className="group-data-[collapsible=icon]:hidden">
+              <ModeToggle />
+            </div>
           </div>
-          <ModeToggle />
+
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link to="/settings">
+                  <Settings />
+                  <span>Settings</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton onClick={signOut}>
+                <LogOut />
+                <span>Sign out</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" className="flex-1" asChild>
-            <Link to="/settings">
-              <Settings className="h-4 w-4 mr-1" />
-              Settings
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
+      </SidebarFooter>
+    </Sidebar>
   );
 }

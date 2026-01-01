@@ -13,6 +13,7 @@ import Statements from "./pages/Statements";
 import Accounts from "./pages/Accounts";
 import BankProfile from "./pages/BankProfile";
 import Insights from "./pages/Insights";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
                 <Route path="/insights" element={<Insights />} />
                 <Route path="/accounts" element={<Accounts />} />
                 <Route path="/accounts/:profileId" element={<BankProfile />} />
+                <Route path="/settings" element={<Settings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

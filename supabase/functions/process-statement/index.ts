@@ -121,7 +121,13 @@ serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ success: true, count: transactions.length }), {
+    const totalAmount = transactions.reduce((sum, t) => sum + Math.abs(t.amount || 0), 0);
+
+    return new Response(JSON.stringify({
+      success: true,
+      count: transactions.length,
+      totalAmount
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {

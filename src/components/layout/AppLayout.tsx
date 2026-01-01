@@ -7,12 +7,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+
 export function AppLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [bankProfiles, setBankProfiles] = useState<BankProfile[]>([]);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
-
 
   useEffect(() => {
     if (!loading && !user) {
@@ -40,8 +41,6 @@ export function AppLayout() {
     setBankProfiles(data as BankProfile[]);
   };
 
-
-
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
@@ -55,13 +54,16 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <main className="flex-1 overflow-auto">
-        <Outlet context={{ bankProfiles, selectedProfileId, refreshProfiles: fetchBankProfiles }} />
-      </main>
-
-
-    </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-auto">
+          <div className="p-4 md:hidden">
+            <SidebarTrigger />
+          </div>
+          <Outlet context={{ bankProfiles, selectedProfileId, refreshProfiles: fetchBankProfiles }} />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
