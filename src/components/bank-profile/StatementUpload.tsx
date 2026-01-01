@@ -81,7 +81,6 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                         filename: file.name,
                         file_path: filePath,
                         file_size: file.size,
-                        file_size: file.size,
                         status: 'queued',
                     })
                     .select();

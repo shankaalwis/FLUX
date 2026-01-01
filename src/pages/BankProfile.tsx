@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { ProfileOverview } from '@/components/bank-profile/ProfileOverview';
 import { StatementUpload } from '@/components/bank-profile/StatementUpload';
+import { ProfileTransactions } from '@/components/bank-profile/ProfileTransactions';
+import { ProfileInsights } from '@/components/bank-profile/ProfileInsights';
 import { SettingsTab } from '@/components/bank-profile/SettingsTab';
 import { toast } from 'sonner';
 
@@ -98,14 +100,14 @@ export default function BankProfile() {
                 </TabsContent>
 
                 <TabsContent value="transactions" className="space-y-4">
-                    <div className="text-center py-12 text-muted-foreground">
-                        Transactions tab - Coming soon
+                    <div className="space-y-4">
+                        <ProfileTransactions profileId={profile.id} />
                     </div>
                 </TabsContent>
 
                 <TabsContent value="insights" className="space-y-4">
-                    <div className="text-center py-12 text-muted-foreground">
-                        Insights tab - Coming soon
+                    <div className="space-y-4">
+                        <ProfileInsights profileId={profile.id} />
                     </div>
                 </TabsContent>
 

@@ -1,6 +1,6 @@
-# MoneMap - Smart Bank Statement Analysis
+# Flux - Smart Bank Statement Analysis
 
-MoneMap is a modern financial analysis platform that transforms generic bank statements into intelligent, actionable insights using AI.
+Flux is a modern financial analysis platform that transforms generic bank statements into intelligent, actionable insights using AI.
 
 ## 🚀 Features
 

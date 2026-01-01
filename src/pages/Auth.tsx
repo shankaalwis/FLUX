@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { BarChart3, TrendingUp, Shield } from 'lucide-react';
+import { Activity, TrendingUp, Shield } from 'lucide-react';
 
 const authSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -62,7 +62,7 @@ export default function Auth() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <BarChart3 className="w-6 h-6 text-primary-foreground" />
+              <Activity className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-2xl font-bold text-primary-foreground">Flux</span>
           </div>
@@ -102,7 +102,7 @@ export default function Auth() {
           <CardHeader className="text-center">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-primary-foreground" />
+                <Activity className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold">Flux</span>
             </div>

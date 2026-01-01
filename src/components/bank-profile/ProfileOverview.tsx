@@ -66,14 +66,34 @@ export function ProfileOverview({ profileId }: ProfileOverviewProps) {
         .slice(0, 8);
 
     // Monthly chart data (placeholder - would need real aggregation)
-    const monthlyData = [
-        { month: 'Jan', income: 0, expenses: 0 },
-        { month: 'Feb', income: 0, expenses: 0 },
-        { month: 'Mar', income: 0, expenses: 0 },
-        { month: 'Apr', income: 0, expenses: 0 },
-        { month: 'May', income: 0, expenses: 0 },
-        { month: 'Jun', income: 0, expenses: 0 },
-    ];
+    // Monthly chart data
+    const monthlyData = transactions.reduce((acc, t) => {
+        const date = new Date(t.transaction_date);
+        const month = date.toLocaleString('default', { month: 'short' });
+        const existing = acc.find(d => d.month === month);
+
+        if (existing) {
+            if (t.transaction_type === 'credit') existing.income += t.amount;
+            else existing.expenses += Math.abs(t.amount);
+        } else {
+            acc.push({
+                month,
+                income: t.transaction_type === 'credit' ? t.amount : 0,
+                expenses: t.transaction_type === 'debit' ? Math.abs(t.amount) : 0
+            });
+        }
+        return acc;
+    }, [] as { month: string; income: number; expenses: number }[])
+        .sort((a, b) => { // Sort by month roughly - simplified for last 6 months usually
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return months.indexOf(a.month) - months.indexOf(b.month);
+        });
+
+    if (monthlyData.length === 0) {
+        // Fallback for empty state or fill with last 6 months
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        months.forEach(m => monthlyData.push({ month: m, income: 0, expenses: 0 }));
+    }
 
     // Top merchants
     const merchantData = transactions
@@ -110,17 +130,17 @@ export function ProfileOverview({ profileId }: ProfileOverviewProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
                     title="Total Income"
-                    value={`$${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                    value={`Rs. ${totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                     icon={<DollarSign className="h-5 w-5" />}
                 />
                 <StatCard
                     title="Total Expenses"
-                    value={`$${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                    value={`Rs. ${totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                     icon={<TrendingDown className="h-5 w-5" />}
                 />
                 <StatCard
                     title="Net Cashflow"
-                    value={`$${netCashflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
+                    value={`Rs. ${netCashflow.toLocaleString(undefined, { minimumFractionDigits: 2 })}`}
                     subtitle={netCashflow >= 0 ? 'Positive' : 'Negative'}
                     icon={<CreditCard className="h-5 w-5" />}
                 />
@@ -141,12 +161,22 @@ export function ProfileOverview({ profileId }: ProfileOverviewProps) {
             {/* Bottom section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                    <TrendLineChart data={[
-                        { date: 'Week 1', balance: 0 },
-                        { date: 'Week 2', balance: 0 },
-                        { date: 'Week 3', balance: 0 },
-                        { date: 'Week 4', balance: 0 },
-                    ]} />
+                    <TrendLineChart data={
+                        transactions
+                            .sort((a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime())
+                            .reduce((acc, t) => {
+                                const date = new Date(t.transaction_date).toLocaleDateString();
+                                const lastBalance = acc.length > 0 ? acc[acc.length - 1].balance : 0;
+                                const change = t.transaction_type === 'credit' ? t.amount : -Math.abs(t.amount);
+
+                                // Simple running balance simulation if balance is not provided
+                                const newBalance = (t.balance !== null) ? t.balance : lastBalance + change;
+
+                                acc.push({ date, balance: newBalance });
+                                return acc;
+                            }, [] as { date: string; balance: number }[])
+                            .slice(-10) // Last 10 transactions for clarity
+                    } />
                 </div>
                 <TopMerchants data={topMerchants} />
             </div>
