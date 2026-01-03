@@ -9,9 +9,8 @@ import { CategoryPieChart } from '@/components/dashboard/CategoryPieChart';
 import { TrendLineChart } from '@/components/dashboard/TrendLineChart';
 import { TopMerchants } from '@/components/dashboard/TopMerchants';
 import { RecentInsights } from '@/components/dashboard/RecentInsights';
-import { DollarSign, TrendingDown, CreditCard, RefreshCw, Database } from 'lucide-react';
+import { DollarSign, TrendingDown, CreditCard, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { seedData } from '@/utils/seed_data';
 
 interface OutletContext {
   bankProfiles: BankProfile[];
@@ -106,10 +105,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Overview of your financial health</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => user && seedData(user.id)}>
-          <Database className="h-4 w-4 mr-2" />
-          Simulate Data
-        </Button>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
