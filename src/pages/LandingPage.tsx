@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -20,9 +21,21 @@ import {
   Search,
   LayoutGrid
 } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const [effectiveTheme, setEffectiveTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    if (theme === 'system') {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setEffectiveTheme(isDark ? 'dark' : 'light');
+    } else {
+      setEffectiveTheme(theme);
+    }
+  }, [theme]);
 
   const scrollToDemo = () => {
     const element = document.getElementById('demo-section');
@@ -254,7 +267,7 @@ export default function LandingPage() {
           <div className="relative max-w-6xl mx-auto rounded-xl border border-border/50 shadow-2xl overflow-hidden group">
             {/* Image */}
             <img
-              src="/dashboard-preview.png"
+              src={effectiveTheme === 'dark' ? "/dashboard-preview.png" : "/dashboard-preview-l.png"}
               alt="Flux Dashboard"
               className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-[1.02]"
             />
