@@ -30,9 +30,9 @@ export function SpendingChart({ data }: SpendingChartProps) {
                   borderRadius: '8px',
                 }}
               />
-              <Legend />
-              <Bar dataKey="income" fill="hsl(var(--chart-1))" name="Income" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="expenses" fill="hsl(var(--chart-3))" name="Expenses" radius={[4, 4, 0, 0]} />
+              <Legend iconType="circle" />
+              <Bar dataKey="income" fill="hsl(var(--primary))" name="Income" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="expenses" fill="hsl(var(--destructive))" name="Expenses" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

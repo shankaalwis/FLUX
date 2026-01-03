@@ -19,7 +19,7 @@ export default function Auth() {
   const { user } = useAuth();
 
   if (user) {
-    navigate('/');
+    navigate('/dashboard');
     return null;
   }
 
@@ -41,7 +41,7 @@ export default function Auth() {
           password,
         });
         if (error) throw error;
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (error: any) {
       toast.error(error.message);
