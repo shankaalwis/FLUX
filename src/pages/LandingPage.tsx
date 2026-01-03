@@ -342,9 +342,14 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-12 bg-muted/10">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Flux Logo" className="w-6 h-6 rounded" />
-            <span className="font-bold">Flux</span>
+          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-8">
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Flux Logo" className="w-6 h-6 rounded" />
+              <span className="font-bold">Flux</span>
+            </div>
+            <span className="text-xs text-muted-foreground hidden md:block">
+              © {new Date().getFullYear()} Flux Financial Analysis. All Rights Reserved.
+            </span>
           </div>
 
           <div className="flex gap-8 text-sm text-muted-foreground items-center">
@@ -354,9 +359,10 @@ export default function LandingPage() {
               <ModeToggle />
             </div>
           </div>
-        </div>
-        <div className="container mx-auto px-6 mt-8 text-center md:text-left text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Flux Financial Analysis. All Rights Reserved.
+
+          <div className="md:hidden text-xs text-muted-foreground mt-4">
+            © {new Date().getFullYear()} Flux Financial Analysis. All Rights Reserved.
+          </div>
         </div>
       </footer>
     </div>
