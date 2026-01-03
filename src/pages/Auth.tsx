@@ -60,37 +60,53 @@ export default function Auth() {
       </div>
 
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary p-12 flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <img src="/logo.png" alt="Flux Logo" className="w-10 h-10 rounded-lg" />
-            <span className="text-2xl font-bold text-primary-foreground">Flux</span>
+      <div className="hidden lg:flex lg:w-1/2 bg-primary p-12 flex-col justify-between relative overflow-hidden">
+        {/* Subtle animated background graphic */}
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-black/5 rounded-full blur-3xl animate-pulse delay-700" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 mb-8">
+            <img src="/logo.png" alt="Flux Logo" className="w-20 h-20 rounded-2xl shadow-lg" />
+            <span className="text-4xl font-bold text-primary-foreground tracking-tight">Flux</span>
           </div>
-          <h1 className="text-4xl font-bold text-primary-foreground mb-4">
-            Intelligent Bank Statement Analysis
+          <h1 className="text-5xl font-extrabold text-primary-foreground mb-6 leading-tight">
+            Master Your Financial <br /> Data with AI
           </h1>
-          <p className="text-primary-foreground/80 text-lg">
-            Upload your bank statements and let AI categorize transactions, detect patterns, and generate actionable insights.
+          <p className="text-primary-foreground/90 text-xl max-w-lg leading-relaxed">
+            Flux transforms your raw bank statements into clear, actionable financial intelligence.
+            Experience the power of automated categorization and deep spending insights.
           </p>
         </div>
 
-        <div className="space-y-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-5 h-5 text-primary-foreground" />
+        <div className="space-y-8 relative z-10">
+          <div className="flex items-start gap-5 group">
+            <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 duration-300">
+              <TrendingUp className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
-              <h3 className="font-semibold text-primary-foreground">Smart Categorization</h3>
-              <p className="text-primary-foreground/70 text-sm">AI-powered transaction categorization with confidence scores</p>
+              <h3 className="text-lg font-bold text-primary-foreground mb-1">Instant Clarity</h3>
+              <p className="text-primary-foreground/80 text-base">Visualize your income, expenses, and net worth trends instantly.</p>
             </div>
           </div>
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-primary-foreground" />
+
+          <div className="flex items-start gap-5 group">
+            <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 duration-300 delay-100">
+              <Activity className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
-              <h3 className="font-semibold text-primary-foreground">Secure & Private</h3>
-              <p className="text-primary-foreground/70 text-sm">Your financial data stays encrypted and protected</p>
+              <h3 className="text-lg font-bold text-primary-foreground mb-1">Smart Insights</h3>
+              <p className="text-primary-foreground/80 text-base">Detect anomalies, identify subscriptions, and optimize your spending with AI.</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-5 group">
+            <div className="w-12 h-12 rounded-xl bg-primary-foreground/20 flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110 duration-300 delay-200">
+              <Shield className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-primary-foreground mb-1">Bank-Grade Privacy</h3>
+              <p className="text-primary-foreground/80 text-base">Your data is encrypted, isolated, and accessible only by you. No prying eyes.</p>
             </div>
           </div>
         </div>
