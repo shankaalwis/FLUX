@@ -60,9 +60,7 @@ export default function Auth() {
       <div className="hidden lg:flex lg:w-1/2 bg-primary p-12 flex-col justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-primary-foreground/20 flex items-center justify-center">
-              <Activity className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img src="/logo.png" alt="Flux Logo" className="w-10 h-10 rounded-lg" />
             <span className="text-2xl font-bold text-primary-foreground">Flux</span>
           </div>
           <h1 className="text-4xl font-bold text-primary-foreground mb-4">

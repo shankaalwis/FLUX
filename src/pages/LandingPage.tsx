@@ -38,9 +38,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center backdrop-blur-sm">
-              <TrendingUp className="w-5 h-5 text-primary" />
-            </div>
+            <img src="/logo.png" alt="Flux Logo" className="w-8 h-8 rounded-lg" />
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
               Flux
             </span>
@@ -332,9 +330,7 @@ export default function LandingPage() {
       <footer className="border-t border-border/40 py-12 bg-muted/10">
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-primary/20 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-primary" />
-            </div>
+            <img src="/logo.png" alt="Flux Logo" className="w-6 h-6 rounded" />
             <span className="font-bold">Flux</span>
           </div>
 

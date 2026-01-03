@@ -32,7 +32,7 @@ export function AppSidebar() {
   const { signOut, user } = useAuth();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Accounts', href: '/accounts', icon: Building2 },
     { name: 'Transactions', href: '/transactions', icon: CreditCard },
     { name: 'Statements', href: '/statements', icon: FileText },
@@ -45,9 +45,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-border p-4">
         <div className="flex items-center justify-between group-data-[state=collapsed]:justify-center">
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-              <Activity className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <img src="/logo.png" alt="Flux Logo" className="w-8 h-8 rounded-lg" />
             <span className="text-lg font-bold truncate group-data-[state=collapsed]:hidden">Flux</span>
           </div>
           <SidebarTrigger className="" />
