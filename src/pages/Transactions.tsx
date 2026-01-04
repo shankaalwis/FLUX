@@ -1,13 +1,12 @@
 
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Transaction, BankProfile } from '@/types/database';
 import { TransactionTable } from '@/components/transactions/TransactionTable';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ArrowUpDown, Download, Search } from 'lucide-react';
+import { ArrowUpDown, Download } from 'lucide-react';
 
 interface OutletContext {
     bankProfiles: BankProfile[];
@@ -19,8 +18,8 @@ export default function Transactions() {
     const { bankProfiles, selectedProfileId } = useOutletContext<OutletContext>();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
         if (user) {
@@ -49,16 +48,6 @@ export default function Transactions() {
         setLoading(false);
     };
 
-    const filteredTransactions = transactions.filter(t => {
-        const searchLower = searchTerm.toLowerCase();
-        return (
-            t.description.toLowerCase().includes(searchLower) ||
-            (t.merchant_name && t.merchant_name.toLowerCase().includes(searchLower)) ||
-            (t.category && t.category.toLowerCase().includes(searchLower)) ||
-            t.amount.toString().includes(searchLower)
-        );
-    });
-
     const toggleSort = () => {
         setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
     };
@@ -86,23 +75,13 @@ export default function Transactions() {
                 </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search transactions..."
-                        className="pl-8"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-            </div>
-
             <TransactionTable
-                transactions={filteredTransactions}
+                transactions={transactions}
                 loading={loading}
                 showAccount={!selectedProfileId}
                 bankProfiles={bankProfiles}
+                initialCategory={searchParams.get('category') || 'all'}
+                initialSearch={searchParams.get('search') || ''}
             />
         </div>
     );

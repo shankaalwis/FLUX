@@ -98,6 +98,25 @@ export default function Statements() {
         }
     };
 
+    const handleDeleteMany = async (items: { id: string, path: string }[]) => {
+        try {
+            const paths = items.map(i => i.path);
+            const ids = items.map(i => i.id);
+
+            const { error: storageError } = await supabase.storage.from('statements').remove(paths);
+            if (storageError) throw storageError;
+
+            const { error: dbError } = await supabase.from('statements').delete().in('id', ids);
+            if (dbError) throw dbError;
+
+            setStatements(prev => prev.filter(s => !ids.includes(s.id)));
+            toast.success(`${ids.length} statements deleted`);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete statements');
+        }
+    };
+
     const filteredStatements = statements.filter(s => {
         const matchesSearch = s.filename.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesProfile = filterProfile === 'all' || s.bank_profile_id === filterProfile;
@@ -163,6 +182,7 @@ export default function Statements() {
                 bankProfiles={bankProfiles}
                 onRetry={handleRetry}
                 onDelete={handleDelete}
+                onDeleteMany={handleDeleteMany}
             />
 
             <StatementUploadDialog

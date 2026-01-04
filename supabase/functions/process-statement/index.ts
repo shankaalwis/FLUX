@@ -42,29 +42,57 @@ serve(async (req) => {
     }
 
     let transactions = [];
+    let statementSummary = {};
 
     if (textContent && geminiKey) {
       // AI Processing with Gemini
+      // Improved AI Prompt for structured extraction
       const prompt = `
-        Analyze this bank statement text and extract all transactions into a JSON array.
-        Ignore headers, footers, and summaries.
-        For each transaction, provide:
-        - date (YYYY-MM-DD format)
-        - description (string)
-        - amount (number, negative for debit/expense, positive for credit/income)
-        - category (guess based on description, e.g., 'Food & Dining', 'Shopping', 'Bills & Utilities', 'Transfer', 'Income')
-        - merchant (extracted merchant name or simplified description)
-        - is_recurring (boolean, true if likely a subscription or monthly bill like Netflix, Spotify, Rent, Utilities)
+        You are a precise financial data extraction assistant.
+        Analyze the following bank statement text and extract all transactions into a strict JSON object.
+        
+        CRITICAL RULES:
+        1. Output ONLY valid JSON. No markdown formatting, no comments.
+        2. The output must be an object containing "summary" and "transactions".
+        3. Extract opening balance, closing balance, total debits, and total credits if available.
+        4. "transactions" must be an array of objects.
+        5. Identify RECURRING transactions. Set "is_recurring": true for subscriptions (Netflix, Spotify, Apple, Google, Adobe, Gym), utilities (Water, Electric, Internet, Phone), Insurance, and Rent.
+        
+        REQUIRED JSON STRUCTURE:
+        {
+          "summary": {
+            "opening_balance": number or null,
+            "closing_balance": number or null,
+            "total_debits": number or null,
+            "total_credits": number or null
+          },
+          "transactions": [
+            {
+              "date": "YYYY-MM-DD",
+              "description": "Full original description",
+              "amount": number (negative for expenses, positive for income),
+              "category": "Best guess category",
+              "merchant": "Clean merchant name",
+              "is_recurring": boolean
+            }
+          ]
+        }
 
-        Text:
-        ${textContent.substring(0, 30000)} // Limit context window safely
-        `;
+        Bank Statement Text:
+        """
+        ${textContent.substring(0, 30000)}
+        """
+      `;
 
-      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`, {
+      const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            responseMimeType: "application/json"
+          }
         })
       });
 
@@ -74,43 +102,68 @@ serve(async (req) => {
         throw new Error(`Gemini API Error: ${geminiData.error.message}`);
       }
 
-      const rawText = geminiData.candidates[0].content.parts[0].text;
-      // Extract JSON from markdown code block if present
-      const jsonMatch = rawText.match(/```json\n([\s\S]*?)\n```/) || rawText.match(/\[[\s\S]*\]/);
+      const candidate = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      if (jsonMatch) {
-        transactions = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+      let parsedResult = { transactions: [], summary: {} };
+
+      if (!candidate) {
+        console.warn("No content in Gemini response");
+      } else {
+        const cleanedText = candidate.replace(/```json/g, '').replace(/```/g, '').trim();
+        try {
+          parsedResult = JSON.parse(cleanedText);
+          // Handle case where AI ignores instructions and returns array directly (fallback)
+          if (Array.isArray(parsedResult)) {
+            parsedResult = { transactions: parsedResult, summary: {} };
+          }
+          transactions = parsedResult.transactions || [];
+          statementSummary = parsedResult.summary || {};
+        } catch (e) {
+          console.error("Failed to parse JSON from AI response:", cleanedText);
+          throw new Error("AI response was not valid JSON");
+        }
       }
 
     } else {
-      // Fallback or Demo Mode if no Key/Text
-      // Generate sample transactions for demo (real PDF parsing would happen here)
+      // Fallback or Demo Mode
       console.log("No text content or API key, using demo data");
       transactions = [
-        { description: 'AMAZON PURCHASE', amount: -89.99, category: 'Shopping', merchant: 'Amazon' },
-        { description: 'SALARY DEPOSIT', amount: 5000.00, category: 'Income', merchant: 'Employer' },
-        { description: 'NETFLIX SUBSCRIPTION', amount: -15.99, category: 'Subscription', merchant: 'Netflix', is_recurring: true },
+        { date: new Date().toISOString().split('T')[0], description: 'AMAZON PURCHASE', amount: -89.99, category: 'Shopping', merchant: 'Amazon' },
+        { date: new Date().toISOString().split('T')[0], description: 'SALARY DEPOSIT', amount: 5000.00, category: 'Income', merchant: 'Employer' },
       ];
+      statementSummary = {
+        opening_balance: 1000,
+        closing_balance: 5910,
+        total_debits: 90,
+        total_credits: 5000
+      };
     }
 
+    // Ensure transactions is available for DB insert logic below
+    // (Existing code uses 'transactions' variable)
+
+
     if (saveToDb && userId && bankProfileId) {
-      for (const tx of transactions) {
-        const hash = `${userId}-${Date.now()}-${Math.random()}`;
-        await supabase.from('transactions').insert({
-          user_id: userId,
-          bank_profile_id: bankProfileId,
-          statement_id: statementId, // Can be null or 'log' ID
-          transaction_hash: hash,
-          transaction_date: tx.date || new Date().toISOString().split('T')[0],
-          description: tx.description,
-          original_description: tx.description,
-          amount: Math.abs(tx.amount),
-          transaction_type: tx.amount > 0 ? 'credit' : 'debit',
-          category: tx.category,
-          category_confidence: 0.85,
-          merchant_name: tx.merchant,
-          is_recurring: tx.is_recurring || false,
-        });
+      const inserts = transactions.map((tx: any) => ({
+        user_id: userId,
+        bank_profile_id: bankProfileId,
+        statement_id: statementId,
+        transaction_hash: `${userId}-${tx.date}-${tx.amount}-${tx.description.substring(0, 20)}`, // Deterministic hash to prevent dupes
+        transaction_date: tx.date || new Date().toISOString().split('T')[0],
+        description: tx.description,
+        original_description: tx.description,
+        amount: typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount, // Ensure number
+        transaction_type: (typeof tx.amount === 'string' ? parseFloat(tx.amount) : tx.amount) > 0 ? 'credit' : 'debit',
+        category: tx.category,
+        category_confidence: 0.9,
+        merchant_name: tx.merchant,
+        is_recurring: tx.is_recurring || false,
+      }));
+
+      // Bulk insert for performance
+      if (inserts.length > 0) {
+        const { error } = await supabase.from('transactions').insert(inserts);
+        if (error) throw error;
       }
 
       // Update status to completed
@@ -127,7 +180,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       count: transactions.length,
-      totalAmount
+      totalAmount,
+      summary: statementSummary
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

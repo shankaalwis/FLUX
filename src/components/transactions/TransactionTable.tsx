@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +21,22 @@ import { Transaction, BankProfile } from '@/types/database';
 import { Loader2 } from 'lucide-react';
 import { AddTransactionDialog } from './AddTransactionDialog';
 import { EditTransactionDialog } from './EditTransactionDialog';
-import { Pencil } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from '@/components/ui/checkbox';
+import { BulkEditDialog } from './BulkEditDialog';
+import { X, Calendar, Tag } from 'lucide-react';
+import { useDeleteTransaction } from '@/hooks/useTransactions';
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -31,6 +44,8 @@ interface TransactionTableProps {
   limit?: number;
   showAccount?: boolean;
   bankProfiles?: BankProfile[];
+  initialCategory?: string;
+  initialSearch?: string;
 }
 
 export function TransactionTable({
@@ -39,14 +54,34 @@ export function TransactionTable({
   limit,
   showAccount = false,
   bankProfiles = [],
+  initialCategory = 'all',
+  initialSearch = '',
 }: TransactionTableProps) {
   // State for filters
-  const [search, setSearch] = React.useState('');
+  const [search, setSearch] = React.useState(initialSearch);
   const [minAmount, setMinAmount] = React.useState('');
   const [maxAmount, setMaxAmount] = React.useState('');
   const [sortConfig, setSortConfig] = React.useState<{ key: 'date' | 'amount'; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = React.useState<string>(initialCategory);
+
+  // Hook for deleting
+  const deleteMutation = useDeleteTransaction();
+  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+
+  // Sync with props
+  React.useEffect(() => {
+    if (initialCategory) setSelectedCategory(initialCategory);
+  }, [initialCategory]);
+
+  React.useEffect(() => {
+    if (initialSearch !== undefined) setSearch(initialSearch);
+  }, [initialSearch]);
+
   const [editingTransaction, setEditingTransaction] = React.useState<Transaction | null>(null);
+
+  // Selection State
+  const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
+  const [bulkEditMode, setBulkEditMode] = React.useState<'category' | 'date' | null>(null);
 
   // Derive unique categories
   const categories = React.useMemo(() => {
@@ -95,6 +130,36 @@ export function TransactionTable({
     }));
   };
 
+  // Selection Handlers
+  const allSelected = displayTransactions.length > 0 && displayTransactions.every(t => selectedIds.has(t.id));
+
+  const toggleSelectAll = () => {
+    const newSelected = new Set(selectedIds);
+    if (allSelected) {
+      displayTransactions.forEach(t => newSelected.delete(t.id));
+    } else {
+      displayTransactions.forEach(t => newSelected.add(t.id));
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const toggleSelect = (id: string) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingId) {
+      deleteMutation.mutate(deletingId);
+      setDeletingId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center p-8">
@@ -103,10 +168,8 @@ export function TransactionTable({
     );
   }
 
-
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative pb-20">
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
           <Input
@@ -145,7 +208,7 @@ export function TransactionTable({
 
         <AddTransactionDialog
           bankProfiles={bankProfiles}
-          onSuccess={() => window.location.reload()} // Simple reload to refresh data
+          onSuccess={() => window.location.reload()}
         />
       </div>
 
@@ -153,6 +216,13 @@ export function TransactionTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Select all"
+                />
+              </TableHead>
               <TableHead className="w-[120px] cursor-pointer hover:text-primary" onClick={() => toggleSort('date')}>
                 Date {sortConfig.key === 'date' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
               </TableHead>
@@ -162,19 +232,26 @@ export function TransactionTable({
               <TableHead className="text-right cursor-pointer hover:text-primary" onClick={() => toggleSort('amount')}>
                 Amount {sortConfig.key === 'amount' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
               </TableHead>
-              <TableHead className="w-[50px]"></TableHead>
+              <TableHead className="w-[100px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayTransactions.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={showAccount ? 6 : 5} className="h-24 text-center">
+                <TableCell colSpan={showAccount ? 7 : 6} className="h-24 text-center">
                   No transactions found.
                 </TableCell>
               </TableRow>
             ) : (
               displayTransactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} data-state={selectedIds.has(transaction.id) && "selected"}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.has(transaction.id)}
+                      onCheckedChange={() => toggleSelect(transaction.id)}
+                      aria-label="Select row"
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">
                     {format(new Date(transaction.transaction_date), 'MMM d, yyyy')}
                   </TableCell>
@@ -216,9 +293,19 @@ export function TransactionTable({
                     }).format(Math.abs(transaction.amount))}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" onClick={() => setEditingTransaction(transaction)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => setEditingTransaction(transaction)}>
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                        onClick={() => setDeletingId(transaction.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -227,12 +314,69 @@ export function TransactionTable({
         </Table>
       </div>
 
+      {/* Bulk Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-4 py-3 rounded-full shadow-2xl flex items-center gap-4 z-50 animate-in slide-in-from-bottom-5 fade-in">
+          <span className="font-medium text-sm pl-2">{selectedIds.size} selected</span>
+          <div className="h-4 w-[1px] bg-background/20" />
+          <Button
+            size="sm" variant="ghost" className="hover:bg-background/20 hover:text-background h-8 px-2"
+            onClick={() => setBulkEditMode('category')}
+          >
+            <Tag className="mr-2 h-3 w-3" />
+            Edit Category
+          </Button>
+          <Button
+            size="sm" variant="ghost" className="hover:bg-background/20 hover:text-background h-8 px-2"
+            onClick={() => setBulkEditMode('date')}
+          >
+            <Calendar className="mr-2 h-3 w-3" />
+            Edit Date
+          </Button>
+          <Button
+            size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-background/20 hover:text-background ml-2"
+            onClick={() => setSelectedIds(new Set())}
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
+
       <EditTransactionDialog
         transaction={editingTransaction}
         open={!!editingTransaction}
         onOpenChange={(open) => !open && setEditingTransaction(null)}
         onSuccess={() => window.location.reload()}
       />
+
+      <BulkEditDialog
+        open={!!bulkEditMode}
+        onOpenChange={(open) => !open && setBulkEditMode(null)}
+        selectedIds={Array.from(selectedIds)}
+        mode={bulkEditMode}
+        existingCategories={categories.filter(c => c !== 'all')}
+        onSuccess={() => {
+          setSelectedIds(new Set()); // Clear selection on success
+          window.location.reload();
+        }}
+      />
+
+      <AlertDialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the transaction locally.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

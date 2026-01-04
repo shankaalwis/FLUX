@@ -1,10 +1,14 @@
+
 import { ReactNode } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { CountUp } from '@/components/ui/count-up';
 
 interface StatCardProps {
   title: string;
   value: string;
+  rawValue?: number; // Enable animation if provided
+  prefix?: string;
   subtitle?: string;
   icon: ReactNode;
   trend?: {
@@ -14,27 +18,39 @@ interface StatCardProps {
   className?: string;
 }
 
-export function StatCard({ title, value, subtitle, icon, trend, className }: StatCardProps) {
+export function StatCard({ title, value, rawValue, prefix = "", subtitle, icon, trend, className }: StatCardProps) {
   return (
     <Card className={cn("", className)}>
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <div className="text-2xl font-bold">
+              {rawValue !== undefined ? (
+                <CountUp
+                  end={rawValue}
+                  decimals={rawValue % 1 !== 0 ? 2 : 0}
+                  prefix={prefix}
+                  duration={1500}
+                />
+              ) : (
+                value
+              )}
+            </div>
             {subtitle && (
               <p className="text-xs text-muted-foreground">{subtitle}</p>
             )}
             {trend && (
               <p className={cn(
-                "text-xs font-medium",
-                trend.positive ? "text-primary" : "text-destructive"
+                "text-xs font-medium flex items-center gap-1",
+                trend.positive ? "text-emerald-500" : "text-rose-500"
               )}>
-                {trend.positive ? '↑' : '↓'} {Math.abs(trend.value)}% from last month
+                <span>{trend.positive ? '↑' : '↓'}</span>
+                <span>{Math.abs(trend.value)}% from last month</span>
               </p>
             )}
           </div>
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+          <div className="p-2 rounded-xl bg-background border shadow-sm">
             {icon}
           </div>
         </div>

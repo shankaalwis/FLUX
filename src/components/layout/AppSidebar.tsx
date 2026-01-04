@@ -7,7 +7,8 @@ import {
   PieChart,
   Settings,
   LogOut,
-  Activity
+  Activity,
+  Tag
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { ModeToggle } from '@/components/mode-toggle';
@@ -38,6 +39,7 @@ export function AppSidebar() {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Accounts', href: '/accounts', icon: Building2 },
     { name: 'Transactions', href: '/transactions', icon: CreditCard },
+    { name: 'Categories', href: '/categories', icon: Tag },
     { name: 'Statements', href: '/statements', icon: FileText },
     { name: 'Insights', href: '/insights', icon: PieChart },
     { name: 'Settings', href: '/settings', icon: Settings },
