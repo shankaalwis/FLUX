@@ -23,13 +23,16 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarTrigger,
-  SidebarRail
+
+  SidebarRail,
+  useSidebar
 } from "@/components/ui/sidebar"
 import { Button } from '@/components/ui/button';
 
 export function AppSidebar() {
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const { state, setOpen } = useSidebar();
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -42,13 +45,20 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-border p-4">
+      <SidebarHeader className="border-b border-border p-4 group-data-[state=collapsed]:p-2">
         <div className="flex items-center justify-between group-data-[state=collapsed]:justify-center">
-          <div className="flex items-center gap-2 overflow-hidden">
-            <img src="/logo.png" alt="Flux Logo" className="w-8 h-8 rounded-lg" />
+          <div
+            className="flex items-center gap-2 overflow-hidden cursor-default group-data-[state=collapsed]:cursor-pointer"
+            onClick={() => {
+              if (state === 'collapsed') {
+                setOpen(true);
+              }
+            }}
+          >
+            <img src="/logo.png" alt="Flux Logo" className="w-8 h-8 rounded-lg shrink-0" />
             <span className="text-lg font-bold truncate group-data-[state=collapsed]:hidden">Flux</span>
           </div>
-          <SidebarTrigger className="" />
+          <SidebarTrigger className="group-data-[state=collapsed]:hidden" />
         </div>
       </SidebarHeader>
 

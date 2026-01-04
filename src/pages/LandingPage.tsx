@@ -94,7 +94,7 @@ export default function LandingPage() {
             <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)] hover:shadow-[0_0_60px_-10px_rgba(var(--primary),0.6)] transition-all hover:scale-105" onClick={() => navigate("/auth")}>
               Start for Free <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
-            <Button size="lg" variant="secondary" className="h-14 px-8 text-lg rounded-full bg-background/50 backdrop-blur-sm border border-border/50 hover:bg-background/80 transition-all hover:scale-105" onClick={scrollToDemo}>
+            <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full bg-background/80 dark:bg-background/50 backdrop-blur-sm border border-input shadow-sm hover:bg-acceleration hover:text-acceleration-foreground transition-all hover:scale-105" onClick={scrollToDemo}>
               View Demo
             </Button>
           </div>
