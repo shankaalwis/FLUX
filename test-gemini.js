@@ -1,5 +1,6 @@
 
-const modelUrl = "https://generativelanguage.googleapis.com/v1beta/models?key=AIzaSyCLemzucLJlsWNXcnmhii9bU28BRke4hfk";
+const apiKey = process.env.GEMINI_API_KEY || "YOUR_API_KEY";
+const modelUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
 
 async function testHelp() {
     console.log("Fetching models from: " + modelUrl);
