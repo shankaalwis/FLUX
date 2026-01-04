@@ -82,13 +82,12 @@ export default function LandingPage() {
           </div>
 
           <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-foreground via-foreground/90 to-foreground/50 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100 drop-shadow-sm">
-            Financial Clarity, <br />
-            <span className="text-foreground">Simplified.</span>
+            Master Your <br />
+            <span className="text-foreground">Financial Trends.</span>
           </h1>
 
           <p className="max-w-xl mx-auto text-lg text-muted-foreground mb-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 leading-relaxed">
-            Transform complex PDF bank statements into clear, actionable insights.
-            Experience automated analysis with enterprise-grade privacy and security.
+            More than just analysis. Track your expenses, understand your past trends, and make wise financial decisions based on deep merchant and category insights.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
@@ -108,7 +107,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold mb-4">Streamlined Workflow</h2>
             <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-              Three steps to complete financial oversight.
+              Three steps to smarter financial decisions.
             </p>
           </div>
 
@@ -119,20 +118,20 @@ export default function LandingPage() {
             <StepCard
               step={1}
               icon={<UploadCloud className="w-8 h-8 text-blue-500" />}
-              title="Upload Statement"
-              description="Securely upload your PDF bank statements. We support most major banks automatically."
+              title="Upload Data"
+              description="Securely upload your financial records. We process your data to uncover hidden patterns."
             />
             <StepCard
               step={2}
               icon={<Cpu className="w-8 h-8 text-purple-500" />}
-              title="Automated Processing"
-              description="Our intelligent engine categorizes transactions and identifies subscriptions instantly."
+              title="Analyze Trends"
+              description="Our intelligent engine tracks categories and merchants to reveal your spending habits."
             />
             <StepCard
               step={3}
               icon={<PieChart className="w-8 h-8 text-emerald-500" />}
-              title="Actionable Insights"
-              description="Gain immediate visibility into spending patterns and financial health."
+              title="Make Wise Decisions"
+              description="Use historical data and insights to optimize your budget and spend wisely."
             />
           </div>
         </div>
@@ -146,7 +145,7 @@ export default function LandingPage() {
               Comprehensive Analysis
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto text-lg">
-              Advanced tools to master your personal finances.
+              Tools to understand where you spent, on which categories, and which merchants.
             </p>
           </div>
 
@@ -171,10 +170,10 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-3xl font-bold">Universal Compatibility</h3>
                     <p className="text-muted-foreground text-lg leading-relaxed">
-                      Flux utilizes advanced parsing algorithms to handle statements from diverse banking institutions. We ensure accurate data extraction without requiring manual formatting.
+                      Flux utilizes advanced parsing algorithms to handle data from diverse sources. We ensure accurate extraction to give you a complete picture of your financial history.
                     </p>
                     <ul className="space-y-3">
-                      <FeatureItem text="Broad bank support" />
+                      <FeatureItem text="Broad format support" />
                       <FeatureItem text="Intelligent transaction cleaning" />
                       <FeatureItem text="Automated categorization" />
                     </ul>
@@ -199,7 +198,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-3xl font-bold">Smart Subscription <br />Detection</h3>
                     <p className="text-muted-foreground text-lg leading-relaxed">
-                      Automatically identify and track recurring payments. Gain visibility into your annualized costs and manage your subscriptions effectively.
+                      Automatically identify recurring payments and track where your money is going. Gain visibility into annual costs and decide what to keep.
                     </p>
                     <ul className="space-y-3">
                       <FeatureItem text="Identify hidden recurring charges" />
@@ -239,7 +238,7 @@ export default function LandingPage() {
                     </div>
                     <h3 className="text-3xl font-bold">Visual Analytics</h3>
                     <p className="text-muted-foreground text-lg leading-relaxed">
-                      Transform raw transaction data into interactive charts. Track spending trends, analyze category breakdowns, and optimize your budget.
+                      Transform raw data into interactive charts. Analyze past trends, breakdown spending by category and merchant, and optimize your financial future.
                     </p>
                     <ul className="space-y-3">
                       <FeatureItem text="Interactive data visualization" />
@@ -263,7 +262,7 @@ export default function LandingPage() {
       {/* Dashboard Preview Section (Image) */}
       <section id="demo-section" className="py-24 relative overflow-hidden">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-12">Your Financial Command Center</h2>
+          <h2 className="text-3xl font-bold mb-12">Your Financial Intelligence Hub</h2>
           <div className="relative max-w-6xl mx-auto rounded-xl border border-border/50 shadow-2xl overflow-hidden group">
             {/* Image */}
             <img
@@ -329,9 +328,9 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-32">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-5xl font-bold mb-8 tracking-tight">Financial clarity awaits.</h2>
+          <h2 className="text-5xl font-bold mb-8 tracking-tight">Make your spending wise.</h2>
           <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Join users who have taken control of their financial data with Flux.
+            Join users who have taken control of their financial trends with Flux.
           </p>
           <Button size="lg" className="h-16 px-12 text-xl rounded-full shadow-[0_0_50px_-10px_rgba(var(--primary),0.5)] hover:shadow-[0_0_80px_-10px_rgba(var(--primary),0.6)] transition-all hover:scale-105" onClick={() => navigate("/auth")}>
             Start for Free

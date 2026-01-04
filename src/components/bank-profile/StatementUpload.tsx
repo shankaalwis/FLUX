@@ -284,7 +284,7 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                 <CardHeader>
                     <CardTitle>Upload Statements</CardTitle>
                     <CardDescription>
-                        Upload PDF bank statements to extract and analyze transactions
+                        Upload financial documents to reveal spending trends and insights
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -318,7 +318,7 @@ export function StatementUpload({ profileId }: StatementUploadProps) {
                 {statements.length === 0 ? (
                     <Card>
                         <CardContent className="py-12 text-center text-muted-foreground">
-                            No statements uploaded yet. Upload your first statement to get started.
+                            No financial data added yet. Upload documents to start tracking.
                         </CardContent>
                     </Card>
                 ) : (

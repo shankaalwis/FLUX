@@ -103,7 +103,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your financial health</p>
+          <p className="text-muted-foreground">Overview of your financial trends and insights</p>
         </div>
 
       </div>
@@ -124,13 +124,13 @@ export default function Dashboard() {
         <StatCard
           title="Transactions"
           value={transactions.length.toString()}
-          subtitle="This period"
+          subtitle="Tracked this period"
           icon={<CreditCard className="h-5 w-5" />}
         />
         <StatCard
           title="Recurring"
           value={recurringCount.toString()}
-          subtitle="Subscriptions detected"
+          subtitle="Active subscriptions"
           icon={<RefreshCw className="h-5 w-5" />}
         />
       </div>

@@ -31,7 +31,7 @@ export function StatementStats({ statements }: StatementStatsProps) {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{processing}</div>
-                    <p className="text-xs text-muted-foreground">Currently being analyzed</p>
+                    <p className="text-xs text-muted-foreground">Processing for insights</p>
                 </CardContent>
             </Card>
             <Card>

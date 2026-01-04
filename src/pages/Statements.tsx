@@ -110,7 +110,7 @@ export default function Statements() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold">Statements</h1>
-                    <p className="text-muted-foreground">Manage and process your bank statements</p>
+                    <p className="text-muted-foreground">Manage your financial documents to unlock insights</p>
                 </div>
                 <Button onClick={() => setShowUpload(true)}>
                     <Upload className="h-4 w-4 mr-2" />

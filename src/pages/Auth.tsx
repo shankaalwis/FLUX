@@ -71,10 +71,10 @@ export default function Auth() {
             <span className="text-4xl font-bold text-primary-foreground tracking-tight">Flux</span>
           </div>
           <h1 className="text-5xl font-extrabold text-primary-foreground mb-6 leading-tight">
-            Master Your Financial <br /> Data with AI
+            Master Your Financial <br /> Trends with AI
           </h1>
           <p className="text-primary-foreground/90 text-xl max-w-lg leading-relaxed">
-            Flux transforms your raw bank statements into clear, actionable financial intelligence.
+            Flux transforms your financial history into clear, actionable intelligence.
             Experience the power of automated categorization and deep spending insights.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function Auth() {
             </div>
             <div>
               <h3 className="text-lg font-bold text-primary-foreground mb-1">Instant Clarity</h3>
-              <p className="text-primary-foreground/80 text-base">Visualize your income, expenses, and net worth trends instantly.</p>
+              <p className="text-primary-foreground/80 text-base">Track expenses, understand categories, and see your net worth trends instantly.</p>
             </div>
           </div>
 
@@ -96,7 +96,7 @@ export default function Auth() {
             </div>
             <div>
               <h3 className="text-lg font-bold text-primary-foreground mb-1">Smart Insights</h3>
-              <p className="text-primary-foreground/80 text-base">Detect anomalies, identify subscriptions, and optimize your spending with AI.</p>
+              <p className="text-primary-foreground/80 text-base">Analyze merchant spending, identify subscriptions, and optimize your budget.</p>
             </div>
           </div>
 
