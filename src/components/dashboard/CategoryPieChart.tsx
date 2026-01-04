@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CategoryPieChartProps {
   data: {
@@ -22,6 +23,7 @@ const COLORS = [
 
 export function CategoryPieChart({ data }: CategoryPieChartProps) {
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const isMobile = useIsMobile();
 
   return (
     <Card>
@@ -29,7 +31,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
         <CardTitle className="text-lg">Spending by Category</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px]">
+        <div className={isMobile ? "h-[350px]" : "h-[300px]"}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -37,7 +39,7 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
-                outerRadius={100}
+                outerRadius={isMobile ? 80 : 100}
                 paddingAngle={2}
                 dataKey="value"
               >
@@ -54,9 +56,9 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
                 }}
               />
               <Legend
-                layout="vertical"
-                verticalAlign="middle"
-                align="right"
+                layout={isMobile ? 'horizontal' : 'vertical'}
+                verticalAlign={isMobile ? 'bottom' : 'middle'}
+                align={isMobile ? 'center' : 'right'}
                 iconType="circle"
                 formatter={(value, entry) => {
                   const item = data.find(d => d.name === value);
