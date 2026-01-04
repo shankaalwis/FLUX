@@ -154,4 +154,12 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Ensure Recharts text uses the global sans font (Aptos) */
+  .recharts-text,
+  .recharts-label,
+  .recharts-tooltip-item,
+  .recharts-cartesian-axis-tick-value {
+    font-family: var(--font-sans) !important;
+  }
 }
