@@ -180,7 +180,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                                         <p className="text-xs text-muted-foreground">{new Date(t.transaction_date).toLocaleDateString()}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-bold">Rs. {Math.abs(t.amount).toLocaleString()}</p>
+                                        <p className="font-bold">Rs. {Math.abs(t.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                         <Badge variant="secondary" className="text-xs">Recurring</Badge>
                                     </div>
                                 </div>
@@ -208,7 +208,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                                         <p className="text-xs text-muted-foreground">{new Date(t.transaction_date).toLocaleDateString()}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="font-bold text-destructive">Rs. {Math.abs(t.amount).toLocaleString()}</p>
+                                        <p className="font-bold text-destructive">Rs. {Math.abs(t.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                                         <Badge variant="destructive" className="text-xs">Anomaly</Badge>
                                     </div>
                                 </div>
@@ -228,7 +228,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                         {topMerchants.map((m, i) => (
                             <div key={i} className="flex items-center justify-between border-b pb-2 last:border-0">
                                 <span className="font-medium">{m.name}</span>
-                                <span className="font-bold">Rs. {m.amount.toLocaleString()}</span>
+                                <span className="font-bold">Rs. {m.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         ))}
                     </div>
@@ -245,7 +245,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                         {topCategories.map((c, i) => (
                             <div key={i} className="flex items-center justify-between border-b pb-2 last:border-0">
                                 <span className="font-medium">{c.name}</span>
-                                <span className="font-bold">Rs. {c.amount.toLocaleString()}</span>
+                                <span className="font-bold">Rs. {c.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                             </div>
                         ))}
                     </div>
@@ -269,7 +269,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                         <RefreshCw className="h-4 w-4 text-blue-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Rs. {recurringTotal.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                        <div className="text-2xl font-bold">Rs. {recurringTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         <p className="text-xs text-muted-foreground">{uniqueRecurring.length} active subscriptions</p>
                     </CardContent>
                 </Card>
@@ -279,7 +279,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                         <TrendingUp className="h-4 w-4 text-green-500" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">Rs. {avgTransaction.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+                        <div className="text-2xl font-bold">Rs. {avgTransaction.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                         <p className="text-xs text-muted-foreground">Per debit transaction</p>
                     </CardContent>
                 </Card>
@@ -296,7 +296,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                             {topMerchants.slice(0, 3).map((m, i) => (
                                 <div key={i} className="flex justify-between text-sm">
                                     <span className="truncate max-w-[150px]">{m.name}</span>
-                                    <span className="font-semibold">Rs. {m.amount.toLocaleString()}</span>
+                                    <span className="font-semibold">Rs. {m.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                             ))}
                         </div>
@@ -312,7 +312,7 @@ export function ProfileInsights({ profileId }: ProfileInsightsProps) {
                             {topCategories.slice(0, 3).map((c, i) => (
                                 <div key={i} className="flex justify-between text-sm">
                                     <span className="truncate max-w-[150px]">{c.name}</span>
-                                    <span className="font-semibold">Rs. {c.amount.toLocaleString()}</span>
+                                    <span className="font-semibold">Rs. {c.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                             ))}
                         </div>

@@ -290,6 +290,8 @@ export function TransactionTable({
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'LKR',
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
                     }).format(Math.abs(transaction.amount))}
                   </TableCell>
                   <TableCell>

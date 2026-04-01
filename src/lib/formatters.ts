@@ -7,6 +7,10 @@ export const formatCurrency = (amount: number, currency = 'LKR') => {
     }).format(amount).replace('LKR', 'Rs.');
 };
 
+/** Format a number as a plain amount string, always showing 2 decimal places. e.g. 1234 → "1,234.00" */
+export const formatAmount = (amount: number): string =>
+    amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export const formatCompactNumber = (number: number) => {
     return new Intl.NumberFormat('en-US', {
         notation: "compact",

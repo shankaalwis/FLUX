@@ -22,9 +22,9 @@ export function AccountComparisonChart({ data }: AccountComparisonChartProps) {
                         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                             <XAxis dataKey="accountName" className="text-xs" />
-                            <YAxis className="text-xs" tickFormatter={(value) => `Rs. ${value.toLocaleString()}`} />
+                            <YAxis className="text-xs" tickFormatter={(value) => `Rs. ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} />
                             <Tooltip
-                                formatter={(value: number) => [`Rs. ${value.toLocaleString()}`, '']}
+                                formatter={(value: number) => [`Rs. ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, '']}
                                 contentStyle={{
                                     backgroundColor: 'hsl(var(--card))',
                                     border: '1px solid hsl(var(--border))',

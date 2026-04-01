@@ -29,7 +29,7 @@ export function StatCard({ title, value, rawValue, prefix = "", subtitle, icon, 
               {rawValue !== undefined ? (
                 <CountUp
                   end={rawValue}
-                  decimals={rawValue % 1 !== 0 ? 2 : 0}
+                  decimals={2}
                   prefix={prefix}
                   duration={1500}
                 />
